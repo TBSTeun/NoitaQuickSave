@@ -9,8 +9,9 @@
         Process, WaitClose, noita.exe
         EnvGet, saveDir, AppData
         saveDir := StrReplace(saveDir, "Roaming", "LocalLow\Nolla_Games_Noita\save00")
-        FileCopyDir, %saveDir%, .\save00, true
+        RunWait, C:\ProgramData\chocolatey\tools\7z.exe a -tzip -mx1 ".\save00_latest.zip" "%saveDir%\*", , Hide
         Run, %executablePath%, %executableDir%
+        RunWait, C:\ProgramData\chocolatey\tools\7z.exe x ".\save00_latest.zip" -o".\save00_current" -y, , Hide
         Return
 
     F9::
@@ -18,7 +19,10 @@
         executableDir := RTrim(executablePath, "noita.exe")
         Process, Close, noita.exe
         EnvGet, saveDir, AppData
-        saveDir := StrReplace(saveDir, "Roaming", "LocalLow\Nolla_Games_Noita\save00")
-        FileCopyDir, save00, %saveDir%, true
+        saveDir := StrReplace(saveDir, "Roaming", "LocalLow\Nolla_Games_Noita")
+        FileMoveDir, %saveDir%\save00, %saveDir%\delete_save00, 2
+        FileMoveDir, .\save00_current, %saveDir%\save00, 2
         Run, %executablePath%, %executableDir%
+        RunWait, C:\ProgramData\chocolatey\tools\7z.exe x ".\save00_latest.zip" -o".\save00_current" -y, , Hide
+        FileRemoveDir, %saveDir%\delete_save00, 1
         Return
